@@ -11,6 +11,7 @@
 
 
 <script>
+import { bus } from "../store/index"
 export default {
   head() {
     return {
@@ -48,6 +49,10 @@ export default {
     }
   },
   created() {
+    bus.$on("adToBasket", (adToBasket) => {
+      debugger
+      //this.basketArry.push(adToBasket)
+    })
   },
 
 }

@@ -73,7 +73,6 @@ export default {
 
     methods: {
         addBasket(id) {
-            debugger
             let cartIndex = undefined;
             const isLocalStorage = localStorage.getItem("cart");
             let localStorageData = JSON.parse(isLocalStorage);

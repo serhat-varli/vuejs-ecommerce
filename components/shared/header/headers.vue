@@ -13,7 +13,8 @@
                     <div class="col-md-7">
                         <nav>
                             <ul>
-                                <li v-for="(item, index) in nav" :key="index"><nuxt-link to="/">{{ item.name }}</nuxt-link></li>
+                                <li v-for="(item, index) in nav" :key="index"><nuxt-link to="/">{{ item.name }}</nuxt-link>
+                                </li>
                             </ul>
                         </nav>
                     </div>
@@ -25,26 +26,32 @@
                                     <div class="search__wrap" :class="searchOpen ? 'active' : ''">
                                         <form class="search__form">
                                             <span>Search</span>
-                                            <input type="text" name="search" id="search" :value="search" placeholder="Search.." />
+                                            <input type="text" name="search" id="search" :value="search"
+                                                placeholder="Search.." />
                                             <button @click="searchChange"><i class="icon-search"></i></button>
                                         </form>
                                         <i @click="searchClose" class="icon-close"></i>
                                     </div>
                                 </li>
-                                <li><nuxt-link to="/"><i class="icon-like"></i><small>{{ favoriteCount }}</small></nuxt-link></li>
+                                <li><nuxt-link to="/"><i class="icon-like"></i><small>{{ favoriteCount
+                                }}</small></nuxt-link></li>
                                 <li class="small__wrap">
-                                    <nuxt-link to="/cart"><i class="icon-shopping-bag1"></i><small>{{ basketCount }}</small></nuxt-link>
+                                    <nuxt-link to="/cart"><i class="icon-shopping-bag1"></i><small>{{ basketCount
+                                    }}</small></nuxt-link>
                                     <div class="small__basket" v-if="basketProduct.length > 0">
                                         <div class="small__basket--item--wrap">
                                             <div class="basket__item" v-for="(item, index) in basketProduct" :key="index">
-                                                <nuxt-link :to="`/product/`+item.slug">
+                                                <nuxt-link :to="`/product/` + item.slug">
                                                     <div class="product__info">
                                                         <h2>{{ item.name }}</h2>
-                                                        <h3>{{ item.qty }} x ${{ item.price.toFixed(2).replace('.', ',') }}</h3>
+                                                        <h3>{{ item.qty }} x ${{ item.price.toFixed(2).replace('.', ',') }}
+                                                        </h3>
                                                     </div>
                                                     <div class="img"
-                                                        v-for="(img, innerIndex) in item.sm_pictures.slice(0, 1)" :key="innerIndex">
-                                                        <img :src="`https://d-themes.com/vue/molla/server` + img.url" :alt="item.name" />
+                                                        v-for="(img, innerIndex) in item.sm_pictures.slice(0, 1)"
+                                                        :key="innerIndex">
+                                                        <img :src="`https://d-themes.com/vue/molla/server` + img.url"
+                                                            :alt="item.name" />
                                                     </div>
                                                 </nuxt-link>
                                                 <i @click="removeItem(item.id)" class="icon-close"></i>
@@ -53,8 +60,11 @@
                                         <div class="btn__wrap">
                                             <span>Total ${{ totalPrice.toFixed(2).replace('.', ',') }}</span>
                                             <div class="btn__inner d-flex justify-content-between">
-                                                <nuxt-link to="/cart" class="w-100 btn btn-outline-danger rounded-0 mr-2">Wiev Cart</nuxt-link>
-                                                <nuxt-link to="/cart" class="w-100 btn btn-outline-info rounded-0">Checkout</nuxt-link>
+                                                <nuxt-link to="/cart"
+                                                    class="w-100 btn btn-outline-danger rounded-0 mr-2">Wiev
+                                                    Cart</nuxt-link>
+                                                <nuxt-link to="/cart"
+                                                    class="w-100 btn btn-outline-info rounded-0">Checkout</nuxt-link>
                                             </div>
                                         </div>
                                     </div>
@@ -72,6 +82,7 @@
 </template>
 
 <script>
+import { bus } from "../../../store/index"
 import 'assets/fonts/icomoon.css';
 export default {
     name: 'Header',
@@ -160,9 +171,17 @@ export default {
     },
     created() {
         this.getProduct();
+
+        bus.$on("adToBasket", (adToBasket) => {
+            this.basketCount = 0;
+            this.basketProduct = [];
+            this.totalPriceArry = [];
+            this.totalPrice = 0;
+            this.getProduct();
+        })
     },
-    watch : {
-        changeBaskets:function() {
+    watch: {
+        changeBaskets: function () {
             this.basketCount = 0;
             this.basketProduct = [];
             this.totalPriceArry = [];
@@ -202,7 +221,7 @@ export default {
     .heade__wrap .site__header--icon .search__wrap .search__form input {font-size: 20px;width: 450px;border: 0;margin-right: 0px;border-bottom: 1px solid #ccc;padding: 5px 30px 5px 15px;outline: 0;}
     .heade__wrap .site__header--icon .search__wrap .search__form input:focus {font-size: 20px;width: 450px;border: 0;margin-right: 0px;border-bottom: 1px solid #ccc;padding: 5px 30px 5px 15px;outline: 0;}
     .heade__wrap .site__header--icon .search__wrap .search__form button {display: flex;align-items: center;justify-content: center;border: 0;background: 0;font-size: 22px;margin-left: -30px;}
-    .heade__wrap .site__header--icon .small__wrap .small__basket {background: white;visibility: hidden;opacity: 0;transition: ease all .2s;position: absolute;left: 0;transform: translate(0px, 20px);top:68px;z-index:99;}
+    .heade__wrap .site__header--icon .small__wrap .small__basket {background: white;visibility: hidden;opacity: 0;transition: ease all .2s;position: absolute;left: 0;transform: translate(0px, 20px);top:68px;z-index:99;width: 100%;}
     .heade__wrap .site__header--icon .small__wrap:hover .small__basket {opacity: 1;visibility: visible;transform: translate(0px, 0px);}
     .heade__wrap .site__header--icon .small__wrap .small__basket--item--wrap  {max-height: 325px;overflow-y: auto;display: block;width: 300px;padding: 30px;z-index: 100;font-size: 1.3rem;z-index: 1001;margin: 1px 0 0;border-radius: 0;border: none;padding-bottom: 0;}   
     .heade__wrap .site__header--icon .no__product p {font-size: 14px;text-align: center;}

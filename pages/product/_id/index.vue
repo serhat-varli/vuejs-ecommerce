@@ -73,12 +73,13 @@
   
 <script>
 import axios from "axios";
+import { bus } from "../../../store/index"
 import 'vue-slick-carousel/dist/vue-slick-carousel.css';
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css';
 export default {
     head() {
         return {
-            title: "Molla",
+            title: "Molla - " + this.name,
             meta: [
                 {
                     hid: 'description',
@@ -133,8 +134,6 @@ export default {
                     this.short_desc = product.short_desc;
                     this.ratingsCount = product.ratings;
                     this.ratings = (product.ratings * 20);
-                 
-                    debugger
                 })
                 .catch((e) => {
                     console.log(e)
@@ -154,13 +153,12 @@ export default {
             }
         },
         addToBasket(e) {
-            debugger
             e.preventDefault();
             let getocalStorage = localStorage.getItem("cart");
             if (getocalStorage == null) {
                 this.getProducts[0]["qty"] = this.qty;
                 localStorage.setItem("cart", JSON.stringify(this.getProducts))
-                this.$emit("adToBasket", this.getProducts);
+                bus.$emit("adToBasket", this.getProducts);
             }
             else {
                 let productPars = JSON.parse(getocalStorage)
@@ -170,13 +168,12 @@ export default {
                     this.getProducts[0]["qty"] = this.qty;
                     productPars.push(this.getProducts[0]);
                     localStorage.setItem("cart", JSON.stringify(productPars))
-                    this.$emit("adToBasket", productPars);
+                    bus.$emit("adToBasket", productPars);
                 }
                 else {
-                    debugger
                     productFind["qty"] = productFind.qty + this.qty;
                     localStorage.setItem("cart", JSON.stringify(productPars))
-                    this.$emit("adToBasket", productPars);
+                    bus.$emit("adToBasket", productPars);
                 }
             }
 
