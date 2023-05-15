@@ -1,5 +1,9 @@
 <template>
     <div>
+        <div v-if="isLoading">
+            <div class="spinner"></div>
+        </div>
+        <template v-else>
         <Headers />
         <div class="container my-4">
             <div class="row">
@@ -67,6 +71,7 @@
             </div>
         </div>
         <Footers />
+       </template>
     </div>
 </template>
   
@@ -107,6 +112,7 @@ export default {
             ratings: 0,
             ratingsCount: 0,
             qty: 1,
+            isLoading: true,
             sliderSetting: {
                 "dots": true,
                 "dotsClass": "slick-dots custom-dot-class",
@@ -134,6 +140,7 @@ export default {
                     this.short_desc = product.short_desc;
                     this.ratingsCount = product.ratings;
                     this.ratings = (product.ratings * 20);
+                    this.isLoading = false;
                 })
                 .catch((e) => {
                     console.log(e)
