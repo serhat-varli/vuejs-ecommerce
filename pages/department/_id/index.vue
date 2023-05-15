@@ -1,56 +1,63 @@
 <template>
     <div>
-        <Headers />
-        <div class="container my-4">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="product__list">
-                        <div class="breadcrumb w-100">
-                            <ul>
-                                <li>Home</li>
-                                <li>Product</li>
-                                <li>{{ title }}</li>
-                            </ul>
-                        </div>
-                        <div class="list" v-if="getLists.length > 0">
-                            <div class="conteiner">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="filter__item" v-if="getCategorys[0].length > 0">
-                                            <h2>Category</h2>
-                                            <ul class="category">
-                                                <li v-for="(item, index) in getCategorys[0]" :key="index"><nuxt-link :to="`/department/` + item.slug">{{ item.name }}</nuxt-link></li>
-                                            </ul>
+        <div v-if="isLoading">
+            <div class="spinner"></div>
+        </div>
+        <template v-else>
+            <Headers />
+            <div class="container my-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="product__list">
+                            <div class="breadcrumb w-100">
+                                <ul>
+                                    <li>Home</li>
+                                    <li>Product</li>
+                                    <li>{{ title }}</li>
+                                </ul>
+                            </div>
+                            <div class="list" v-if="getLists.length > 0">
+                                <div class="conteiner">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="filter__item" v-if="getNewCategory[0].length > 0">
+                                                <h2>Category</h2>
+                                                <ul class="category">
+                                                    <li v-for="(item, index) in getNewCategory[0]" :key="index"><nuxt-link :to="`/department/` + item.slug">{{ item.name }}</nuxt-link></li>
+                                                </ul>
+                                            </div>
+                                            <div class="filter__item" v-if="getNewVariants[0].length > 0">
+                                                <h2>Color</h2>
+                                                <ul class="color">
+                                                    <li v-for="(item, index) in getNewVariants[0]" :key="index"><nuxt-link to="#" :style="`background:` + item.name"></nuxt-link></li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="filter__item" v-if="getNewVariantsSize[0].length > 0">
+                                                <h2>Size</h2>
+                                                <ul class="size">
+                                                    <li v-for="(item, index) in getNewVariantsSize[0]" :key="index"><nuxt-link to="#">{{ item.name }}</nuxt-link></li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <div class="filter__item" v-if="getVariants[0].length > 0">
-                                            <h2>Color</h2>
-                                            <ul class="color">
-                                                <li v-for="(item, index) in getVariants[0]" :key="index"><nuxt-link to="#" :style="`background:` + item.color "></nuxt-link></li>
-                                            </ul>
-                                        </div>
-                                        <div class="filter__item" v-if="getVariants[0].length > 0">
-                                            <h2>Size</h2>
-                                            <ul class="size">
-                                                <li v-for="(item, index) in getVariants[0].size" :key="index"><nuxt-link to="#" :style="`background:` + item.color "></nuxt-link></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="items_area col-md-4" v-for="(item, index) in getLists" :key="index">
-                                                <div class="img___wrap">
-                                                    <img v-for="itemInner in item.pictures.slice(0, 2)" :src="`https://d-themes.com/vue/molla/server` + itemInner.url" :alt="item.name" :title="item.name" class="w-100" :key="itemInner.id" />
-                                                    <div name="basket" class="btn" @click="addBasket(item.id)"><i class="icon-shopping-bag"></i> ADD TO CARD</div>
-                                                </div>
-                                                <div class="product__wrap">
-                                                    <div class="product__category" v-if="item.category">
-                                                        <nuxt-link v-for="category in item.category" :key="category.id" :to="`/department/` + category.slug">{{ category.name }}</nuxt-link>
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="items_area col-md-4" v-for="(item, index) in getLists"
+                                                    :key="index">
+                                                    <div class="img___wrap">
+                                                        <img v-for="itemInner in item.pictures.slice(0, 2)" :src="`https://d-themes.com/vue/molla/server` + itemInner.url" :alt="item.name" :title="item.name" class="w-100" :key="itemInner.id" />
+                                                        <div name="basket" class="btn" @click="addBasket(item.id)"><i class="icon-shopping-bag"></i> ADD TO CARD</div>
                                                     </div>
-                                                    <div class="product__info">
-                                                        <nuxt-link :to="`/product/` + item.slug">{{ item.name }}</nuxt-link>
-                                                        <div class="price__area">
-                                                            <span class="price" v-if="item.price">${{ item.price.toFixed(2).replace('.', ',') }}</span>
-                                                            <span class="price__old" v-if="item.sale_price">${{ item.sale_price.toFixed(2).replace('.', ',') }}</span>
+                                                    <div class="product__wrap">
+                                                        <div class="product__category" v-if="item.category">
+                                                            <nuxt-link v-for="category in item.category" :key="category.id" :to="`/department/` + category.slug">{{ category.name }}</nuxt-link>
+                                                        </div>
+                                                        <div class="product__info">
+                                                            <nuxt-link :to="`/product/` + item.slug">{{ item.name }}</nuxt-link>
+                                                            <div class="price__area">
+                                                                <span class="price" v-if="item.price">${{ item.price.toFixed(2).replace('.', ',') }}</span>
+                                                                <span class="price__old" v-if="item.sale_price">${{ item.sale_price.toFixed(2).replace('.', ',') }}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -63,14 +70,15 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <Footers />
+            <Footers />
+        </template>
     </div>
 </template>
   
   
 <script>
 import axios from "axios";
+import { bus } from "../../../store/index"
 import 'vue-slick-carousel/dist/vue-slick-carousel.css';
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css';
 export default {
@@ -95,9 +103,14 @@ export default {
         return {
             getLists: [],
             getCategorys: [],
+            getNewCategory: [],
             getVariants: [],
+            getNewVariants: [],
+            getVariantsSize: [],
+            getNewVariantsSize: [],
             depName: null,
-            title: null
+            title: null,
+            isLoading: true
         }
     },
     methods: {
@@ -106,25 +119,87 @@ export default {
             axios.get("https://d-themes.com/vue/molla/server/shop")
                 .then((response) => {
                     response.data.products.map((product) => {
-                        this.getCategorys.push(product.category)
-                        this.getVariants.push(product.variants)
                         product.category.map((cat) => {
                             if (cat.slug == slugId) {
                                 this.getLists.push(product);
                                 this.title = cat.name;
                             }
                         })
+                        if (product.variants.length > 0) {
+                            product.variants[0].size.map((productsize, index) => {
+                                this.getVariantsSize.push({ id: productsize.id, name: productsize.name })
+                            })
+                        }
+                        if (product.variants.length > 0) {
+                            product.variants.map((productColor, index) => {
+                                this.getVariants.push({ id: productColor.id, name: productColor.color })
+                            })
+                        }
+                        if (product.category.length > 0) {
+                            product.category.map((productCategory, index) => {
+                                this.getCategorys.push({ name: productCategory.name, slug: productCategory.slug })
+                            })
+                        }
                     })
+                    let newMaping = [
+                        {name: this.getCategorys, lasName : this.getNewCategory},
+                        {name: this.getVariants, lasName : this.getNewVariants},
+                        {name: this.getVariantsSize, lasName : this.getNewVariantsSize}
+                    ];
+                    newMaping.map((filterArray) => {
+                        if (filterArray.name.length > 0) {
+                            let newFilter = [];
+                            filterArray.name.map((productFilter, index) => {
+                                if (filterArray.lasName.length > 0) {
+                                    let newItem = newFilter.filter(x => x.name == productFilter.name)
+                                    if (newItem.length == 0) {
+                                        newFilter.push({ id: productFilter.name,  name: productFilter.name, slug: productFilter.slug })
+                                    }
+                                }
+                                else {
+                                    newFilter.push({id: productFilter.name, name: productFilter.name, slug: productFilter.slug })
+                                }
+                                filterArray.lasName.push(newFilter)
+                            })
+                        }
+                    })
+
+                    this.isLoading = false;
                 })
                 .catch((e) => {
                     console.log(e)
                 })
+        },
+        addBasket(id) {
+            let getLocalStorage = localStorage.getItem("cart");
+            if(getLocalStorage == null) {
+                const product = this.getLists.filter(x => x.id == id)
+                product[0]["qty"] = 1;
+                localStorage.setItem("cart", JSON.stringify(product))
+                bus.$emit("adToBasket", product);
+            }
+            else {
+                const getLocalStorageParse = JSON.parse(getLocalStorage)
+                const isProduct = getLocalStorageParse.filter(x => x.id == id);
                 debugger
-
+                if(isProduct.length == 0) {
+                    const productItem = this.getLists.filter(x => x.id == id)
+                    productItem[0]["qty"] = 1;
+                     getLocalStorageParse.push(productItem[0])
+                    localStorage.setItem("cart", JSON.stringify(getLocalStorageParse))
+                }
+                else {
+                    isProduct[0].qty += 1;
+                    localStorage.setItem("cart", JSON.stringify(getLocalStorageParse))
+                }
+                bus.$emit("adToBasket", getLocalStorageParse);
+            }
+           
         }
     },
     created() {
-        this.getDepartment()
+        this.getDepartment();
+
     },
 }
 </script>
@@ -159,7 +234,7 @@ export default {
 .product__list .filter__item h2 {color: #333;font-weight: 400;font-size: 20px;line-height: 47px;letter-spacing: -.01em;margin-bottom: 15px;border-bottom: 0.1rem solid #ebebeb;}
 .product__list .filter__item ul {list-style: none;margin: 0;padding: 0;}
 .product__list .filter__item .color {display: flex;align-items: center;list-style: none;margin: 0;padding: 0;flex-wrap: wrap;}
-.product__list .filter__item .color a {width: 20px;height: 20px;margin-right: 15px;border-radius: 100%;align-items: center;transition: all ease .3s;display: block;}
+.product__list .filter__item .color a {width: 20px;height: 20px;margin-right: 15px;border-radius: 100%;align-items: center;transition: all ease .3s;display: block;margin-bottom:15px;}
 .product__list .filter__item .color a:hover {box-shadow: 0 0 0 0.1rem #ccc;}
 .product__list .filter__item .category a {font-size:16px;color: #333;text-decoration: none;}
 </style>
