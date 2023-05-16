@@ -29,20 +29,33 @@
                                             <div class="filter__item" v-if="getNewVariants[0].length > 0">
                                                 <h2>Color</h2>
                                                 <ul class="color">
-                                                    <li v-for="(item, index) in getNewVariants[0]" :key="index"><nuxt-link to="#" :style="`background:` + item.name"></nuxt-link></li>
+                                                    <li v-for="(item, index) in getNewVariants[0]" @click="listFilter(item.name, 'color')" :key="index"><nuxt-link to="#" :style="`background:` + item.name"></nuxt-link></li>
                                                 </ul>
                                             </div>
-                                            
+
                                             <div class="filter__item" v-if="getNewVariantsSize[0].length > 0">
                                                 <h2>Size</h2>
                                                 <ul class="size">
-                                                    <li v-for="(item, index) in getNewVariantsSize[0]" :key="index"><nuxt-link to="#">{{ item.name }}</nuxt-link></li>
+                                                    <li v-for="(item, index) in getNewVariantsSize[0]" @click="listFilter(item.name, 'size')" :key="index"><nuxt-link to="#">{{ item.name }}</nuxt-link></li>
                                                 </ul>
                                             </div>
                                         </div>
                                         <div class="col-md-9">
                                             <div class="row">
-                                                <div class="items_area col-md-4" v-for="(item, index) in getLists"
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-6"><span>Showing {{ depCount }} Products</span>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <ul class="grid__area">
+                                                                <li><i @click="listGrid('double')" class="icon-grid-double"></i></li>
+                                                                <li><i @click="listGrid('triple')" class="icon-grid-triple"></i></li>
+                                                                <li><i @click="listGrid('quad')" class="icon-grid-quad"></i></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="items_area" :class="gridClass" v-for="(item, index) in getNewLists.length > 0 ? getNewLists :  getLists"
                                                     :key="index">
                                                     <div class="img___wrap">
                                                         <img v-for="itemInner in item.pictures.slice(0, 2)" :src="`https://d-themes.com/vue/molla/server` + itemInner.url" :alt="item.name" :title="item.name" class="w-100" :key="itemInner.id" />
@@ -76,6 +89,7 @@
 </template>
   
   
+  
 <script>
 import axios from "axios";
 import { bus } from "../../../store/index"
@@ -102,13 +116,16 @@ export default {
     data() {
         return {
             getLists: [],
+            getNewLists: [],
             getCategorys: [],
             getNewCategory: [],
             getVariants: [],
             getNewVariants: [],
             getVariantsSize: [],
             getNewVariantsSize: [],
+            gridClass: "col-md-4",
             depName: null,
+            depCount: 0,
             title: null,
             isLoading: true
         }
@@ -123,6 +140,7 @@ export default {
                             if (cat.slug == slugId) {
                                 this.getLists.push(product);
                                 this.title = cat.name;
+                                this.depCount++;
                             }
                         })
                         if (product.variants.length > 0) {
@@ -140,11 +158,12 @@ export default {
                                 this.getCategorys.push({ name: productCategory.name, slug: productCategory.slug })
                             })
                         }
+
                     })
                     let newMaping = [
-                        {name: this.getCategorys, lasName : this.getNewCategory},
-                        {name: this.getVariants, lasName : this.getNewVariants},
-                        {name: this.getVariantsSize, lasName : this.getNewVariantsSize}
+                        { name: this.getCategorys, lasName: this.getNewCategory },
+                        { name: this.getVariants, lasName: this.getNewVariants },
+                        { name: this.getVariantsSize, lasName: this.getNewVariantsSize }
                     ];
                     newMaping.map((filterArray) => {
                         if (filterArray.name.length > 0) {
@@ -153,11 +172,11 @@ export default {
                                 if (filterArray.lasName.length > 0) {
                                     let newItem = newFilter.filter(x => x.name == productFilter.name)
                                     if (newItem.length == 0) {
-                                        newFilter.push({ id: productFilter.name,  name: productFilter.name, slug: productFilter.slug })
+                                        newFilter.push({ id: productFilter.name, name: productFilter.name, slug: productFilter.slug })
                                     }
                                 }
                                 else {
-                                    newFilter.push({id: productFilter.name, name: productFilter.name, slug: productFilter.slug })
+                                    newFilter.push({ id: productFilter.name, name: productFilter.name, slug: productFilter.slug })
                                 }
                                 filterArray.lasName.push(newFilter)
                             })
@@ -172,7 +191,7 @@ export default {
         },
         addBasket(id) {
             let getLocalStorage = localStorage.getItem("cart");
-            if(getLocalStorage == null) {
+            if (getLocalStorage == null) {
                 const product = this.getLists.filter(x => x.id == id)
                 product[0]["qty"] = 1;
                 localStorage.setItem("cart", JSON.stringify(product))
@@ -182,10 +201,10 @@ export default {
                 const getLocalStorageParse = JSON.parse(getLocalStorage)
                 const isProduct = getLocalStorageParse.filter(x => x.id == id);
                 debugger
-                if(isProduct.length == 0) {
+                if (isProduct.length == 0) {
                     const productItem = this.getLists.filter(x => x.id == id)
                     productItem[0]["qty"] = 1;
-                     getLocalStorageParse.push(productItem[0])
+                    getLocalStorageParse.push(productItem[0])
                     localStorage.setItem("cart", JSON.stringify(getLocalStorageParse))
                 }
                 else {
@@ -194,7 +213,51 @@ export default {
                 }
                 bus.$emit("adToBasket", getLocalStorageParse);
             }
-           
+
+        },
+        listGrid(type) {
+            if (type == "double") {
+                this.gridClass = "col-md-6"
+            }
+            else if (type == "triple") {
+                this.gridClass = "col-md-4"
+            }
+            else if (type == "quad") {
+                this.gridClass = "col-md-3"
+            }
+        },
+        listFilter(id, type) {
+            this.getNewLists = [];
+            this.depCount = 0;
+            this.getLists.map((product, index) => {
+                if (product.variants.length > 0) {
+                    if (type == "color") {
+                        product.variants.map((color) => {
+                            if (color.color == id) {
+                                const isProduct = this.getNewLists.filter(x => x.id == product.id)
+                                if (isProduct.length == 0) {
+                                    this.getNewLists.push(product)
+                                    this.depCount++;
+                                }
+                            }
+                        })
+                    }
+                    else {
+                        if (product.variants[index] != undefined) {
+                            debugger
+                            product.variants[index].size.map((size) => {
+                                if (size.name == id) {
+                                    const isProduct = this.getNewLists.filter(x => x.id == product.id)
+                                    if (isProduct.length == 0) {
+                                        this.getNewLists.push(product)
+                                        this.depCount++;
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            })
         }
     },
     created() {
@@ -214,7 +277,7 @@ export default {
 .product__list .breadcrumb ul li::before {content:"\e909";font-family: 'icomoon';font-size: 10px;padding-right: 10px;}
 .product__list .breadcrumb ul li:first-child::before {display: none;}
 .product__list .breadcrumb ul li:last-child {color: #333;}
-.product__list .items_area {position: relative;}
+.product__list .items_area {position: relative;transition: all ease .3s;}
 .product__list .items_area .img___wrap {overflow: hidden;position: relative;}
 .product__list .items_area .img___wrap .btn  {position: absolute;left: 0;right: 0;bottom: 0;z-index: 10;transition: all .35s ease;opacity: 0;visibility: hidden;transform: translateY(100%);background-color: #222;color: white;display: flex;align-items: center;justify-content: center;border-radius: 0;}
 .product__list .items_area .img___wrap .btn i {margin-right:10px;}
@@ -237,4 +300,8 @@ export default {
 .product__list .filter__item .color a {width: 20px;height: 20px;margin-right: 15px;border-radius: 100%;align-items: center;transition: all ease .3s;display: block;margin-bottom:15px;}
 .product__list .filter__item .color a:hover {box-shadow: 0 0 0 0.1rem #ccc;}
 .product__list .filter__item .category a {font-size:16px;color: #333;text-decoration: none;}
+.product__list .grid__area {display: flex;align-items: center;justify-content: end;margin: 0;padding: 0;padding-bottom: 15px;}
+.product__list .grid__area li  {list-style: none;margin-right: 10px;}
+.product__list .grid__area li:last-child  {margin-right: 0px;}
+.product__list .grid__area li i {cursor:pointer}
 </style>
