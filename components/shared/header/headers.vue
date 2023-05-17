@@ -101,7 +101,7 @@ export default {
                 {
                     id: 1,
                     name: "Blog",
-                    slug: "/",
+                    slug: "/blog",
                     order: ""
                 },
                 {
